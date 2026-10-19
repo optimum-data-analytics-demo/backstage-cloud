@@ -1,6 +1,6 @@
 # macOS
 .DS_Store
-
+secrets/gcp-sa-key.json
 # Logs
 logs
 *.log
