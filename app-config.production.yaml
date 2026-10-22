@@ -28,8 +28,8 @@ techdocs:
     googleGcs:
       bucketName: ${TECHDOCS_GCS_BUCKET}
       projectId: ${PROJECT_ID}
-      credentials:
-        $file: ${GOOGLE_APPLICATION_CREDENTIALS}
+      # credentials:
+      #   $file: ${GOOGLE_APPLICATION_CREDENTIALS}
 
 gcsCatalog:
   bucketName: ${TECHDOCS_GCS_BUCKET}
