@@ -8,3 +8,13 @@ To start the app, run:
 yarn install
 yarn start
 ```
+
+
+## Branching
+
+### Main Branch
+This branch code is for gcp cloud run deployment. It is the main branch for production deployment.
+
+
+### Local Development Branch
+This branch code is for local development. It is the main branch for local development.
