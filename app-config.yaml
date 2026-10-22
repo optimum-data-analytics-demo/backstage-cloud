@@ -149,8 +149,8 @@ techdocs:
     googleGcs:
       bucketName: ${TECHDOCS_GCS_BUCKET}
       projectId: ${PROJECT_ID}      # optional
-      credentials :
-        $file: ${GOOGLE_APPLICATION_CREDENTIALS}
+      # credentials :
+      #   $file: ${GOOGLE_APPLICATION_CREDENTIALS}
 scaffolder:
 
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
