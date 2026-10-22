@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: backstage
+      POSTGRES_PASSWORD: pass@123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U backstage"]
+      interval: 5s
+      retries: 10
+
+  backstage:
+    image: backstage:latest
+    env_file: .env
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-sa-key.json
+    volumes:
+      - ./secrets/gcp-sa-key.json:/secrets/gcp-sa-key.json:ro
+    ports:
+      - "7007:7007"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
