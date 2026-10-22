@@ -1,0 +1,74 @@
+name: Backstage CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PROJECT_ID: chatting-llm
+  REGION: asia-south1
+  IMAGE: asia-south1-docker.pkg.dev/chatting-llm/backstage/backstage
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install and build
+        run: |
+          corepack enable
+          yarn install --immutable
+          yarn tsc
+          yarn build:all
+
+      - name: Authenticate to Google Cloud
+        if: github.event_name == 'push'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Build image
+        run: |
+          docker image build . -f packages/backend/Dockerfile \
+            --tag $IMAGE:${{ github.sha }} --tag $IMAGE:latest
+
+      - name: Push image
+        if: github.event_name == 'push'
+        run: |
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:latest
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: backstage
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}:${{ github.sha }}
+          flags: --port=7007 --allow-unauthenticated
+          env_vars: |
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            POSTGRES_PORT=5432
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            APP_BASE_URL=${{ secrets.APP_BASE_URL }}
+            BACKEND_URL=${{ secrets.APP_BASE_URL }}
+            ORGANIZATION_NAME=${{ secrets.ORGANIZATION_NAME }}
+            TECHDOCS_GCS_BUCKET=${{ secrets.TECHDOCS_GCS_BUCKET }}
+            PROJECT_ID=chatting-llm
