@@ -63,8 +63,11 @@ jobs:
           image: ${{ env.IMAGE }}:${{ github.sha }}
           flags: >-
             --port=7007
-            --memory=2Gi
-            --cpu=1
+            --memory=4Gi
+            --cpu=2
+            --cpu-boost 
+            --no-cpu-throttling
+            --min-instances=1
             --service-account=backstage-runtime@chatting-llm.iam.gserviceaccount.com
             --allow-unauthenticated
             --add-cloudsql-instances=chatting-llm:asia-south1:backstage-database
