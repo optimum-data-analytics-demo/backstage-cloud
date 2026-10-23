@@ -67,6 +67,7 @@ jobs:
             --cpu=1
             --service-account=backstage-runtime@chatting-llm.iam.gserviceaccount.com
             --allow-unauthenticated
+            --add-cloudsql-instances=chatting-llm:asia-south1:backstage-database
           env_vars: |
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
             POSTGRES_PORT=5432
