@@ -74,7 +74,7 @@ jobs:
             APP_BASE_URL=${{ secrets.APP_BASE_URL }}
             BACKEND_URL=${{ secrets.APP_BASE_URL }}
             ORGANIZATION_NAME=${{ secrets.ORGANIZATION_NAME }}
-            TECHDOCS_GCS_BUCKET=${{ secrets.TECHDOCS_GCS_BUCKET }}
+            TECHDOCS_GCS_BUCKET=${{ secrets.GCP_BUCKET_NAME }}
             PROJECT_ID=chatting-llm
           secrets: |
             POSTGRES_PASSWORD=backstage-pg-password:latest
