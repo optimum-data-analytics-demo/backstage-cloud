@@ -90,7 +90,7 @@ export default createBackendModule({
 
         await scheduler.scheduleTask({
           id: 'gcs-catalog-sync',
-          frequency: { minutes: 5 },
+          frequency: { minutes: 1 },
           initialDelay: { seconds: 15 },
           timeout: { minutes: 3 },
           fn: () => provider.run(),
