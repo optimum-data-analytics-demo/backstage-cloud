@@ -15,6 +15,11 @@ backend:
       port: ${POSTGRES_PORT}
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
+    knexConfig:
+      pool:
+        min: 0
+        max: 3
+        acquireTimeoutMillis: 60000
 
 auth:
   providers:
