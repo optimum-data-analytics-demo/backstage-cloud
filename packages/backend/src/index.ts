@@ -1,10 +1,4 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+
 
 import { createBackend } from '@backstage/backend-defaults';
 
@@ -19,6 +13,9 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
+
+// Azure backstage
+backend.add(import('./modules/azureBlobCatalog'));
 
 // techdocs plugin
 backend.add(import('@backstage/plugin-techdocs-backend'));
