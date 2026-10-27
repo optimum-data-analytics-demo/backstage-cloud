@@ -12,7 +12,7 @@ backend:
   database:
     client: better-sqlite3
     connection:
-      directory: /app/data
+      directory: ./app/data
       # https://node-postgres.com/features/ssl
       # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
       # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)

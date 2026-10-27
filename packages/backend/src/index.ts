@@ -15,8 +15,7 @@ backend.add(
 );
 
 // Azure backstage
-backend.add(import('./modules/azureBlobCatalog'));
-
+backend.add(import('./modules/azureBlobCatalogProvider'));
 // techdocs plugin
 backend.add(import('@backstage/plugin-techdocs-backend'));
 

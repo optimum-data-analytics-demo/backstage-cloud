@@ -123,7 +123,7 @@ backend:
   database:
     client: better-sqlite3
     connection:
-      directory: /app/data
+      directory: ./app/data
   # see https://backstage.io/docs/ai/mcp-actions#actions-configuration for more details
   actions:
     pluginSources:
@@ -183,6 +183,12 @@ permission:
   enabled: true
 
 # see https://backstage.io/docs/ai/mcp-actions for more details
+
+azureBlobCatalog:
+  containerName: central-docs
+  prefix: synced_data/
+
+
 mcpActions:
   name: 'My Company Backstage' # defaults to "backstage"
   description: 'Tools for managing your software catalog, creating new services from templates, and exploring your developer portal' # optional
