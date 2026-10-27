@@ -6,6 +6,10 @@ app:
   packages: all
 
   extensions:
+    # Block the default ligh and dark theme to show ODA custom theme.
+    - theme:app/light: false
+    - theme:app/auto: false
+
     # Default landing page configuration.
     # The catalog is mounted at /catalog by default but is overridden here to
     # serve as the root page. To switch to the Home page, comment out the

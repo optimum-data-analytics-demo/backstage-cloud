@@ -3,6 +3,11 @@ import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import { navModule } from './modules/nav';
 import { homeModule } from './modules/home';
 
+// Importing Themes
+
+import { odaThemeModule } from './theme/odaThemeModule';
 export default createApp({
-  features: [catalogPlugin, navModule, homeModule],
+  
+  features: [catalogPlugin, navModule, homeModule, odaThemeModule],
+  
 });
