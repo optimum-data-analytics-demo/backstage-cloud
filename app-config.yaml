@@ -99,7 +99,7 @@ app:
               height: 4
 
 organization:
-  name: ${ORG_NAME}
+  name: ${GITHUB_ORGANIZATION_NAME}
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -176,7 +176,10 @@ auth:
     #   - 'https://*.example.com/*'
 
 scaffolder:
-  # see https://backstage.io/docs/features/software-templates/configuration for software template options
+  defaultEnvironment:
+    parameters:
+      githubOrganization: ${GITHUB_ORGANIZATION_NAME}
+  
 
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options

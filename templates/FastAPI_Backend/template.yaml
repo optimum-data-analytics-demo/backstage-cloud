@@ -57,7 +57,7 @@ spec:
       action: publish:github
       input:
         description: ${{ parameters.description }}
-        repoUrl: github.com?owner=optimum-data-analytics-demo&repo=${{ parameters.project_name }}
+        repoUrl: github.com?owner=${{ environment.parameters.githubOrganization }}&repo=${{ parameters.project_name }}
         defaultBranch: main
         repoVisibility: ${{ parameters.repoVisibility }}
 
