@@ -14,7 +14,7 @@ const COLORS = {
   headerRight: '#C70039',  // Example: Deep crimson for the right side
 
 
-  calloutBg: '#0B132A',  // darkest navy: sidebar and header background
+  calloutBg: '#101832',  // darkest navy: sidebar and header background
   heading: '#001546',    // heading text and header gradient
   pageBg: '#f1efefb2',     // grey page background
   button: '#01225b',     // red: buttons and active-item indicator
