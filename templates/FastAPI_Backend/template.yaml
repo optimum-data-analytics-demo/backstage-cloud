@@ -1,0 +1,67 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: fastapi-service-template
+  title: FastAPI Backend
+  description: Creates a new FastAPI Backend project with TechDocs, catalog-info and a docs publish workflow, and pushes it to a new GitHub repository.
+  tags:
+    - python
+    - fastapi
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Project details
+      required:
+        - project_name
+      properties:
+        project_name:
+          title: Project name
+          type: string
+          description: Used as the GitHub repo name, the catalog entity name and the FastAPI title. Lowercase letters, numbers and hyphens only.
+          pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          ui:autofocus: true
+        description:
+          title: Description
+          type: string
+          description: Short description of the service.
+          default: A FastAPI service
+        owner:
+          title: Owner
+          type: string
+          description: Team or user that owns this component in the catalog.
+          default: guest
+        repoVisibility:
+          title: Repository visibility
+          type: string
+          enum:
+            - private
+            - public
+            - internal
+          default: private
+
+  steps:
+    - id: fetch
+      name: Fetch and render skeleton
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          project_name: ${{ parameters.project_name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+
+    - id: publish
+      name: Create GitHub repository
+      action: publish:github
+      input:
+        description: ${{ parameters.description }}
+        repoUrl: github.com?owner=optimum-data-analytics-demo&repo=${{ parameters.project_name }}
+        defaultBranch: main
+        repoVisibility: ${{ parameters.repoVisibility }}
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}

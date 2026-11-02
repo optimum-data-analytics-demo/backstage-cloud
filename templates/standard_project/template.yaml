@@ -1,0 +1,76 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: base-project-template
+  title: Base Project Template 
+  description: A minimal base template providing only the essential core files. Use this as a starting point to build and customize your project when a specialized catalog template is not available.
+  tags:
+    - base 
+    - minimum 
+
+spec:
+  owner: user:guest 
+  type: service
+
+
+  parameters:
+    - title: Project Details 
+      required:
+        - project_name 
+      
+      properties:
+        project_name: 
+          title: Project Name 
+          type: string 
+          description: Used as the Github Repo name, the catalog-info.yaml entity name and the FastAPI title.
+          pattern: '^[A-Za-z0-9]+(-[a-z0-9A-z]+)*$'
+          ui:autofocus: true
+
+        description:
+          title: Description
+          type: string
+          description: Short Description of the service.
+
+
+        owner:
+          title: Owner
+          type: string
+          description: Team or user that owns this component in the catalog.
+          default: guests
+
+        repoVisibility:
+          title: Repository Visibility 
+          type: string
+          enum:
+            - private
+            - public
+            - internal 
+          default: private
+
+  steps:
+    - id: fetch 
+      name: Fetch and render skeleton 
+      action: fetch:template 
+      input: 
+        url: ./content 
+        values:
+          project_name : ${{parameters.project_name}}
+          description : ${{parameters.description}}
+          owner: ${{ parameters.owner}}
+
+    - id: publish 
+      name: Create Github Repository 
+      action: publish:github 
+      input:
+        description: ${{parameters.description}}
+        
+        repoUrl: github.com?owner=optimum-data-analytics-demo&repo=${{ parameters.project_name }}
+        
+        defaultBranch: main 
+        repoVisibility: ${{ parameters.repoVisibility }}
+
+  output:
+    links:
+      - title: Repository 
+        url: ${{ steps.publish.output.remoteUrl }}  
+

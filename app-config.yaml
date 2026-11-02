@@ -196,3 +196,26 @@ azureBlobCatalog:
 mcpActions:
   name: 'My Company Backstage' # defaults to "backstage"
   description: 'Tools for managing your software catalog, creating new services from templates, and exploring your developer portal' # optional
+
+
+catalog:
+  locations:
+    - type: file
+      target: ../../templates/FastAPI_Backend/template.yaml
+      rules:
+        - allow: [Component, System, API, Resource, Location, Template]
+
+    - type: file 
+      target: ../../templates/standard_project/template.yaml
+      
+      rules:
+        - allow: [Component, System, API, Template]
+        
+    
+
+
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+

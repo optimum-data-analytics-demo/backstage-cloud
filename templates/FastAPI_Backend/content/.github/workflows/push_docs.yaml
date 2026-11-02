@@ -1,0 +1,149 @@
+{% raw %}
+name: Push Docs to Blob Storage
+
+on:
+  pull_request:
+    # branches: [main]
+    paths:
+
+      - "docs/**"
+      - "README.md"
+      - ".github/workflows/push_docs.yaml"
+      - "catalog-info.yaml"
+  push:
+    # branches: [main]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - ".github/workflows/push_docs.yaml"
+      - "catalog-info.yaml"
+
+jobs:
+  build_mkdocs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install mkdocs-techdocs-core pyyaml
+
+      - name: Read entity name
+        run: |
+          if [ -f catalog-info.yaml ]; then
+            NAME=$(python -c "import yaml; print(yaml.safe_load(open('catalog-info.yaml','r'))['metadata']['name'].lower())")
+          else
+            NAME=$(echo "" | tr '[:upper:]' '[:lower:]')
+          fi
+          echo "ENTITY_NAME=$NAME" >> $GITHUB_ENV
+
+      - name: Create mkdocs.yaml if missing
+        run: |
+          if [ ! -f mkdocs.yaml ] && [ ! -f mkdocs.yml ]; then
+          cat > mkdocs.yaml <<EOF
+          site_name: ${ENTITY_NAME}
+          docs_dir: docs
+          plugins:
+            - techdocs-core
+          EOF
+          fi
+
+      - name: Use README.md as index.md
+        run: |
+          mkdir -p docs
+          if [ -f README.md ]; then
+            cp README.md docs/index.md
+          elif [ -f docs/README.md ]; then
+            cp docs/README.md docs/index.md
+          elif [ ! -f docs/index.md ]; then
+            echo "# ${ENTITY_NAME}" > docs/index.md
+          fi
+
+      - name: Build static site
+        run: python -m mkdocs build -d site
+
+      - name: Create techdocs_metadata.json
+        run: |
+          echo "{\"build_timestamp\": $(date +%s), \"files\": []}" > site/techdocs_metadata.json
+
+        #  Document Uploading Steps
+      - name: create mkdocs.yaml files if not exist
+        run: |
+          if [ ! -f mkdocs.yaml ]; then 
+          cat > mkdocs.yaml <<EOF
+          site_name: ${ENTITY_NAME}
+          plugins:
+            - techdocs-core          
+          EOF
+          fi
+      - name: create catalog-info.yaml file if not exist
+        run: |
+          if [ ! -f catalog-info.yaml ]; then
+          cat > catalog-info.yaml << EOF
+          apiVersion: backstage.io/v1alpha1
+          kind: Component
+          metadata:
+            name: ${ENTITY_NAME}
+            annotations:
+              backstage.io/techdocs-ref: dir:.
+          spec:
+            type: service
+            lifecycle: production
+            owner: group:default/guests
+
+          EOF
+          fi
+
+      - name: Upload to Azure Blob Storage
+        # if: github.event_name == 'push'
+        env:
+          AZURE_STORAGE_CONNECTION_STRING:    ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} 
+          CONTAINER: ${{ secrets.AZURE_CONTAINER_NAME }}
+
+        run: |
+          az storage blob upload-batch \
+            --source site \
+            --destination "$CONTAINER" \
+            --destination-path "default/component/${ENTITY_NAME}" \
+            --overwrite
+
+          # Upload catalog-info.yaml as well to azure inside synced_data/$ENTITY_NAME/catalog-info.yaml and techdocs.
+
+      - name: Upload source files to Azure Blob Storage
+        # if: github.event_name == 'push'
+        env:
+          AZURE_STORAGE_CONNECTION_STRING:   ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} 
+          CONTAINER: ${{ secrets.AZURE_CONTAINER_NAME }}
+        run: |
+          DEST="synced_data/${ENTITY_NAME}"
+
+          # docs folder -> synced_data/<entity>/docs/
+          az storage blob upload-batch \
+            --source docs \
+            --destination "$CONTAINER" \
+            --destination-path "$DEST/docs" \
+            --overwrite
+
+          # single files -> synced_data/<entity>/
+          for f in catalog-info.yaml mkdocs.yaml; do
+            if [ -f "$f" ]; then
+              az storage blob upload \
+                --container-name "$CONTAINER" \
+                --file "$f" \
+                --name "$DEST/$f" \
+                --overwrite
+            else
+              echo "::warning::$f not found, skipping"
+            fi
+          done
+
+
+{% endraw %}

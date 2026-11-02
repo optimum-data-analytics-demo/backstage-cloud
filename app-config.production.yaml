@@ -36,3 +36,26 @@ techdocs:
       credentials:
         accountName: ${ ACCOUNT_NAME }
         accountKey: ${AZURE_STORAGE_ACCOUNT_KEY}
+
+
+
+
+catalog:
+  locations:
+    - type: file
+      target: ./templates/FastAPI_Backend/template.yaml
+      rules:
+        - allow: [Component, System, API, Resource, Location, Template]
+
+    
+    - type: file 
+      target: ./templates/standard_project/template.yaml
+      rules:
+        - allow: [Component, System, API, Template]
+        
+
+
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}

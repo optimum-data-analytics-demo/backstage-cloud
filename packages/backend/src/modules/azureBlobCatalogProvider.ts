@@ -108,9 +108,9 @@ export default createBackendModule({
 
         await scheduler.scheduleTask({
           id: 'azure-blob-catalog-sync',
-          frequency: { minutes: 3 },
+          frequency: { minutes: 1 },
           initialDelay: { seconds: 15 },
-          timeout: { minutes: 3 },
+          timeout: { minutes: 1 },
           fn: () => provider.run(),
         });
       },
